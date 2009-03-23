@@ -15,15 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with QuickCash. If not, see <http://www.gnu.org/licenses/>.
 
-package net.bobgardner.cash;
+package net.bobgardner.cash.persistence;
+
+import net.bobgardner.cash.model.Account;
 
 /**
- * Hello world!
- * 
  * @author wrg007 (Bob Gardner)
+ * 
  */
-public class App {
-  public static void main(String[] args) {
-    System.out.println("Hello World!");
-  }
+public interface DataWriter {
+  void write(Account account);
 }

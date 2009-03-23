@@ -1,4 +1,19 @@
-// Copyright 2008 Bob Gardner. All Rights Reserved.
+// Copyright 2009 Bob Gardner.
+//
+// This file is part of QuickCash.
+//
+// QuickCash is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// QuickCash is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with QuickCash. If not, see <http://www.gnu.org/licenses/>.
 
 package net.bobgardner.cash.model;
 
@@ -7,7 +22,7 @@ import junit.framework.TestCase;
 /**
  * Tests for {@link Category}
  * 
- * @author bobgardner (Bob Gardner)
+ * @author wrg007 (Bob Gardner)
  */
 public class CategoryTest extends TestCase {
   public void testInstantiation() {
