@@ -30,25 +30,23 @@ public class CategoryTest extends TestCase {
   }
 
   public void testInstantiation_nullName() {
-    boolean passed = false;
     try {
       new Category(0, null, "desc");
     } catch (NullPointerException e) {
       // exception expected
-      passed = true;
+      return;
     }
-    assertTrue(passed);
+    fail("NullPointerException expected for null name");
   }
 
   public void testInstantiation_nullDescription() {
-    boolean passed = false;
     try {
       new Category(0, "name", null);
     } catch (NullPointerException e) {
       // exception expected
-      passed = true;
+      return;
     }
-    assertTrue(passed);
+    fail("NullPointerException expected for null description");
   }
 
   public void testId() {
@@ -66,14 +64,13 @@ public class CategoryTest extends TestCase {
     cat.setName("another");
     assertEquals("another", cat.getName());
 
-    boolean passed = false;
     try {
       cat.setName(null);
     } catch (NullPointerException e) {
       // exception expected
-      passed = true;
+      return;
     }
-    assertTrue(passed);
+    fail("NullPointerException expected for null name");
   }
 
   public void testDescription() {
@@ -82,14 +79,13 @@ public class CategoryTest extends TestCase {
     cat.setDescription("description");
     assertEquals("description", cat.getDescription());
 
-    boolean passed = false;
     try {
       cat.setDescription(null);
     } catch (NullPointerException e) {
       // exception expected
-      passed = true;
+      return;
     }
-    assertTrue(passed);
+    fail("NullPointerException expected for null description");
   }
 
   public void testCompare() {
