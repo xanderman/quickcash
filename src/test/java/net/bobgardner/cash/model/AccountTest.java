@@ -30,58 +30,53 @@ public class AccountTest extends TestCase {
   }
 
   public void testInstantiation_nullName() {
-    boolean passed = false;
     try {
       new Account(-1, null, "institution", "number", Account.Type.CHECKING, "notes");
     } catch (NullPointerException e) {
       // exception expected
-      passed = true;
+      return;
     }
-    assertTrue(passed);
+    fail("NullPointerException expected for null name");
   }
 
   public void testInstantiation_nullInstitution() {
-    boolean passed = false;
     try {
       new Account(-1, "name", null, "number", Account.Type.CHECKING, "notes");
     } catch (NullPointerException e) {
       // exception expected
-      passed = true;
+      return;
     }
-    assertTrue(passed);
+    fail("NullPointerException expected for null institution");
   }
 
   public void testInstantiation_nullNumber() {
-    boolean passed = false;
     try {
       new Account(-1, "name", "institution", null, Account.Type.CHECKING, "notes");
     } catch (NullPointerException e) {
       // exception expected
-      passed = true;
+      return;
     }
-    assertTrue(passed);
+    fail("NullPointerException expected for null number");
   }
 
   public void testInstantiation_nullType() {
-    boolean passed = false;
     try {
       new Account(-1, "name", "institution", "number", null, "notes");
     } catch (NullPointerException e) {
       // exception expected
-      passed = true;
+      return;
     }
-    assertTrue(passed);
+    fail("NullPointerException expected for null type");
   }
 
   public void testInstantiation_nullNotes() {
-    boolean passed = false;
     try {
       new Account(-1, "name", "institution", "number", Account.Type.CHECKING, null);
     } catch (NullPointerException e) {
       // exception expected
-      passed = true;
+      return;
     }
-    assertTrue(passed);
+    fail("NullPointerException expected for null notes");
   }
 
   public void testId() {
@@ -104,7 +99,7 @@ public class AccountTest extends TestCase {
       // exception expected
       passed = true;
     }
-    assertTrue(passed);
+    assertTrue("NullPointerException expected for null name", passed);
     assertEquals("", acc.getName());
   }
 
@@ -121,7 +116,7 @@ public class AccountTest extends TestCase {
       // exception expected
       passed = true;
     }
-    assertTrue(passed);
+    assertTrue("NullPointerException expected for null institution", passed);
     assertEquals("", acc.getInstitution());
   }
 
@@ -138,7 +133,7 @@ public class AccountTest extends TestCase {
       // exception expected
       passed = true;
     }
-    assertTrue(passed);
+    assertTrue("NullPointerException expected for null number", passed);
     assertEquals("", acc.getNumber());
   }
 
@@ -155,7 +150,7 @@ public class AccountTest extends TestCase {
       // exception expected
       passed = true;
     }
-    assertTrue(passed);
+    assertTrue("NullPointerException expected for null type", passed);
     assertEquals(Account.Type.SAVINGS, acc.getType());
   }
 
@@ -172,7 +167,7 @@ public class AccountTest extends TestCase {
       // exception expected
       passed = true;
     }
-    assertTrue(passed);
+    assertTrue("NullPointerException expected for null notes", passed);
     assertEquals("", acc.getNotes());
   }
 
