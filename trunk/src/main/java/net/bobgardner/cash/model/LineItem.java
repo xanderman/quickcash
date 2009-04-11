@@ -17,7 +17,6 @@
 
 package net.bobgardner.cash.model;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigDecimal;
@@ -38,12 +37,13 @@ public class LineItem implements Comparable<LineItem> {
   private final int id;
   BigDecimal amount;
   Category category;
+  String description;
 
-  public LineItem(int id, BigDecimal amount, Category category) {
+  public LineItem(int id, BigDecimal amount, Category category, String description) {
     this.id = id;
-    checkArgument(amount.compareTo(BigDecimal.ZERO) > 0, "Amount must be greater than 0.");
-    this.amount = amount;
+    this.amount = checkNotNull(amount);
     this.category = checkNotNull(category);
+    this.description = checkNotNull(description);
   }
 
   public int getId() {
@@ -55,8 +55,7 @@ public class LineItem implements Comparable<LineItem> {
   }
 
   protected void setAmount(BigDecimal amount) {
-    checkArgument(amount.compareTo(BigDecimal.ZERO) > 0, "Amount must be greater than 0.");
-    this.amount = amount;
+    this.amount = checkNotNull(amount);
   }
 
   public Category getCategory() {
@@ -65,6 +64,14 @@ public class LineItem implements Comparable<LineItem> {
 
   protected void setCategory(Category category) {
     this.category = checkNotNull(category);
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  protected void setDescription(String description) {
+    this.description = checkNotNull(description);
   }
 
   /*

@@ -23,12 +23,14 @@ import java.util.Collections;
 import java.util.SortedSet;
 
 /**
- * Represents the sum total of the application data, stored as a set of
- * accounts, a set of categories, and a set of budgets.
+ * Singleton enum representing the sum total of the application data, stored as
+ * a set of accounts, a set of categories, and a set of budgets.
  * 
  * @author wrg007 (Bob Gardner)
  */
-public class Cashbox {
+public enum Cashbox {
+  INSTANCE;
+
   private final SortedSet<Account> accounts = Sets.newTreeSet();
   private final SortedSet<Category> categories = Sets.newTreeSet();
 

@@ -43,13 +43,11 @@ public class Transaction implements Comparable<Transaction> {
    */
   private final int id;
   private DateMidnight date;
-  private String description;
   private final SortedSet<LineItem> items = Sets.newTreeSet();
 
-  public Transaction(int id, DateMidnight date, String description) {
+  public Transaction(int id, DateMidnight date) {
     this.id = id;
     this.date = checkNotNull(date);
-    this.description = checkNotNull(description);
   }
 
   public int getId() {
@@ -62,14 +60,6 @@ public class Transaction implements Comparable<Transaction> {
 
   protected void setDate(DateMidnight date) {
     this.date = checkNotNull(date);
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  protected void setDescription(String description) {
-    this.description = checkNotNull(description);
   }
 
   public SortedSet<LineItem> getItems() {
@@ -87,6 +77,10 @@ public class Transaction implements Comparable<Transaction> {
   protected void removeItem(LineItem item) {
     // TODO mark deletion for database update
     items.remove(item);
+  }
+
+  public String getDescription() {
+    return "...";
   }
 
   /*
