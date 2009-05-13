@@ -25,174 +25,173 @@ import junit.framework.TestCase;
  * @author wrg007 (Bob Gardner)
  */
 public class AccountTest extends TestCase {
+  @Override
+  public void setUp() {
+    Account.resetCounter();
+    Cashbox.INSTANCE.clearAccounts();
+  }
+
   public void testInstantiation() {
-    new Account(-1, "name", "institution", "number", Account.Type.CHECKING, "notes");
+    Account account =
+        Account.newAccount("name", "institution", "number", Account.Type.CHECKING, "notes");
+    assertTrue(Cashbox.INSTANCE.getAccounts().contains(account));
   }
 
   public void testInstantiation_nullName() {
     try {
-      new Account(-1, null, "institution", "number", Account.Type.CHECKING, "notes");
+      Account.newAccount(null, "institution", "number", Account.Type.CHECKING, "notes");
+      fail("NullPointerException expected for null name");
     } catch (NullPointerException e) {
       // exception expected
-      return;
     }
-    fail("NullPointerException expected for null name");
   }
 
   public void testInstantiation_nullInstitution() {
     try {
-      new Account(-1, "name", null, "number", Account.Type.CHECKING, "notes");
+      Account.newAccount("name", null, "number", Account.Type.CHECKING, "notes");
+      fail("NullPointerException expected for null institution");
     } catch (NullPointerException e) {
       // exception expected
-      return;
     }
-    fail("NullPointerException expected for null institution");
   }
 
   public void testInstantiation_nullNumber() {
     try {
-      new Account(-1, "name", "institution", null, Account.Type.CHECKING, "notes");
+      Account.newAccount("name", "institution", null, Account.Type.CHECKING, "notes");
+      fail("NullPointerException expected for null number");
     } catch (NullPointerException e) {
       // exception expected
-      return;
     }
-    fail("NullPointerException expected for null number");
   }
 
   public void testInstantiation_nullType() {
     try {
-      new Account(-1, "name", "institution", "number", null, "notes");
+      Account.newAccount("name", "institution", "number", null, "notes");
+      fail("NullPointerException expected for null type");
     } catch (NullPointerException e) {
       // exception expected
-      return;
     }
-    fail("NullPointerException expected for null type");
   }
 
   public void testInstantiation_nullNotes() {
     try {
-      new Account(-1, "name", "institution", "number", Account.Type.CHECKING, null);
+      Account.newAccount("name", "institution", "number", Account.Type.CHECKING, null);
+      fail("NullPointerException expected for null notes");
     } catch (NullPointerException e) {
       // exception expected
-      return;
     }
-    fail("NullPointerException expected for null notes");
   }
 
   public void testId() {
-    Account acc = new Account(0, "name", "institution", "number", Account.Type.CHECKING, "notes");
+    Account acc =
+        Account.newAccount("name", "institution", "number", Account.Type.CHECKING, "notes");
     assertEquals(0, acc.getId());
-    acc = new Account(-5, "name", "institution", "number", Account.Type.SAVINGS, "notes");
-    assertEquals(-5, acc.getId());
+    acc = Account.newAccount("name2", "institution2", "number2", Account.Type.SAVINGS, "notes");
+    assertEquals(1, acc.getId());
   }
 
   public void testName() {
-    Account acc = new Account(0, "name", "", "", Account.Type.CHECKING, "");
+    Account acc = Account.newAccount("name", "", "", Account.Type.CHECKING, "");
     assertEquals("name", acc.getName());
     acc.setName("");
     assertEquals("", acc.getName());
 
-    boolean passed = false;
     try {
       acc.setName(null);
+      fail("NullPointerException expected for null name");
     } catch (NullPointerException e) {
       // exception expected
-      passed = true;
     }
-    assertTrue("NullPointerException expected for null name", passed);
     assertEquals("", acc.getName());
   }
 
   public void testInstitution() {
-    Account acc = new Account(0, "", "institution", "", Account.Type.CHECKING, "");
+    Account acc = Account.newAccount("", "institution", "", Account.Type.CHECKING, "");
     assertEquals("institution", acc.getInstitution());
     acc.setInstitution("");
     assertEquals("", acc.getInstitution());
 
-    boolean passed = false;
     try {
       acc.setInstitution(null);
+      fail("NullPointerException expected for null institution");
     } catch (NullPointerException e) {
       // exception expected
-      passed = true;
     }
-    assertTrue("NullPointerException expected for null institution", passed);
     assertEquals("", acc.getInstitution());
   }
 
   public void testNumber() {
-    Account acc = new Account(0, "", "", "number", Account.Type.CHECKING, "");
+    Account acc = Account.newAccount("", "", "number", Account.Type.CHECKING, "");
     assertEquals("number", acc.getNumber());
     acc.setNumber("");
     assertEquals("", acc.getNumber());
 
-    boolean passed = false;
     try {
       acc.setNumber(null);
+      fail("NullPointerException expected for null number");
     } catch (NullPointerException e) {
       // exception expected
-      passed = true;
     }
-    assertTrue("NullPointerException expected for null number", passed);
     assertEquals("", acc.getNumber());
   }
 
   public void testType() {
-    Account acc = new Account(0, "", "", "", Account.Type.CHECKING, "");
+    Account acc = Account.newAccount("", "", "", Account.Type.CHECKING, "");
     assertEquals(Account.Type.CHECKING, acc.getType());
     acc.setType(Account.Type.SAVINGS);
     assertEquals(Account.Type.SAVINGS, acc.getType());
 
-    boolean passed = false;
     try {
       acc.setType(null);
+      fail("NullPointerException expected for null type");
     } catch (NullPointerException e) {
       // exception expected
-      passed = true;
     }
-    assertTrue("NullPointerException expected for null type", passed);
     assertEquals(Account.Type.SAVINGS, acc.getType());
   }
 
   public void testNotes() {
-    Account acc = new Account(0, "", "", "", Account.Type.CHECKING, "notes");
+    Account acc = Account.newAccount("", "", "", Account.Type.CHECKING, "notes");
     assertEquals("notes", acc.getNotes());
     acc.setNotes("");
     assertEquals("", acc.getNotes());
 
-    boolean passed = false;
     try {
       acc.setNotes(null);
+      fail("NullPointerException expected for null notes");
     } catch (NullPointerException e) {
       // exception expected
-      passed = true;
     }
-    assertTrue("NullPointerException expected for null notes", passed);
     assertEquals("", acc.getNotes());
   }
 
   public void testCompare() {
-    Account acc1 = new Account(14, "b", "", "", Account.Type.CHECKING, "");
-    Account acc2 = new Account(15, "c", "", "", Account.Type.SAVINGS, "");
+    Account acc1 = Account.newAccount("b", "", "", Account.Type.CHECKING, "");
+    Account acc2 = Account.newAccount("c", "n", "", Account.Type.SAVINGS, "");
     assertTrue(acc1.compareTo(acc2) < 0);
     assertTrue(acc2.compareTo(acc1) > 0);
 
-    acc2 = new Account(14, "b", "", "psp", Account.Type.CHECKING, "asef");
+    Account.resetCounter();
+    Cashbox.INSTANCE.clearAccounts();
+    acc2 = Account.newAccount("b", "", "psp", Account.Type.CHECKING, "asef");
     assertTrue(acc1.compareTo(acc2) == 0);
     assertTrue(acc2.compareTo(acc1) == 0);
 
-    acc2 = new Account(13, "a", "", "", Account.Type.CHECKING, "");
+    acc1 = Account.newAccount("s", "m", "", Account.Type.CHECKING, "");
+    acc2 = Account.newAccount("m", "e", "", Account.Type.CHECKING, "");
     assertTrue(acc1.compareTo(acc2) > 0);
     assertTrue(acc2.compareTo(acc1) < 0);
   }
 
   public void testEquals() {
-    Account acc1 = new Account(14, "b", "", "", Account.Type.CHECKING, "");
-    Account acc2 = new Account(15, "c", "", "", Account.Type.SAVINGS, "");
+    Account acc1 = Account.newAccount("b", "", "", Account.Type.CHECKING, "");
+    Account acc2 = Account.newAccount("c", "d", "", Account.Type.SAVINGS, "");
     assertFalse(acc1.equals(acc2));
     assertFalse(acc2.equals(acc1));
 
-    acc2 = new Account(14, "", "", "", Account.Type.CHECKING, "");
+    Account.resetCounter();
+    Cashbox.INSTANCE.clearAccounts();
+    acc2 = Account.newAccount("", "c", "", Account.Type.CHECKING, "");
     assertEquals(acc1, acc2);
     assertEquals(acc2, acc1);
   }

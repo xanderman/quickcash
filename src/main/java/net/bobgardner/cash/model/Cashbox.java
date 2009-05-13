@@ -17,18 +17,23 @@
 
 package net.bobgardner.cash.model;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.collect.Sets;
 
 import java.util.Collections;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.SortedSet;
 
 /**
- * Singleton enum representing the sum total of the application data, stored as
- * a set of accounts, a set of categories, and a set of budgets.
+ * Singleton representing the sum total of the application data, stored as a set
+ * of accounts, a set of categories, and a set of budgets.
  * 
  * @author wrg007 (Bob Gardner)
  */
-public enum Cashbox {
+public enum Cashbox implements Observer {
   INSTANCE;
 
   private final SortedSet<Account> accounts = Sets.newTreeSet();
@@ -38,41 +43,114 @@ public enum Cashbox {
     return Collections.unmodifiableSortedSet(accounts);
   }
 
-  public void addAccount(Account account) {
-    for (Account acc : accounts) {
-      if (account.getId() != -1 && acc.getId() == account.getId())
-        throw new IllegalArgumentException("An account with this ID already exists.");
-      if (acc.getName().equals(account.getName()))
-        throw new IllegalArgumentException("An account with this name already exists.");
-      if (acc.getInstitution().equals(account.getInstitution())
-          && acc.getNumber().equals(account.getNumber()))
-        throw new IllegalArgumentException(
-            "An account from this institution with this number already exists.");
-    }
+  /**
+   * Adds an account to Cashbox.
+   * 
+   * Protected so that it is only called by
+   * {@link Account#newAccount(String, String, String, Account.Type, String)}.
+   * 
+   * @param account the account to add (must be valid)
+   * 
+   * @throws IllegalArgumentException if the account is invalid
+   */
+  protected void addAccount(Account account) {
+    // Validity check insures that database constraints are enforced
+    checkNotNull(account);
+    checkArgument(account.isValid(), "Account is invalid.");
+    account.addObserver(this);
     accounts.add(account);
   }
 
-  public void removeAccount(Account account) {
-    // TODO mark deletion for database update
+  /**
+   * Removes an account from Cashbox.
+   * 
+   * Protected so that it is only called by
+   * {@link Account#deleteAccount(Account)}.
+   * 
+   * @param account the account to remove (must be invalid)
+   * 
+   * @throws IllegalArgumentException if the account is valid
+   */
+  protected void removeAccount(Account account) {
+    checkNotNull(account);
+    checkArgument(!account.isValid(), "Account is still valid.");
+    account.deleteObserver(null);
     accounts.remove(account);
+  }
+
+  /**
+   * Visible for testing.
+   */
+  protected void clearAccounts() {
+    accounts.clear();
   }
 
   public SortedSet<Category> getCategories() {
     return Collections.unmodifiableSortedSet(categories);
   }
 
-  public void addCategory(Category category) {
-    for (Category c : categories) {
-      if (category.getId() != -1 && c.getId() == category.getId())
-        throw new IllegalArgumentException("A category with this ID already exists.");
-      if (c.getName().equals(category.getName()))
-        throw new IllegalArgumentException("A category with this name already exists");
-    }
+  /**
+   * Adds a category to Cashbox.
+   * 
+   * Protected so that it is only called by
+   * {@link Category#newCategory(String, String)}.
+   * 
+   * @param category the category to add (must be valid)
+   * 
+   * @throws IllegalArgumentException if the category is invalid
+   */
+  protected void addCategory(Category category) {
+    // Validity check insures that database constraints are enforced
+    checkNotNull(category);
+    checkArgument(category.isValid(), "Category is invalid.");
+    category.addObserver(this);
     categories.add(category);
   }
 
-  public void removeCateory(Category category) {
-    // TODO mark deletion for database update
+  /**
+   * Removes a category from Cashbox.
+   * 
+   * Protected so that it is only called by
+   * {@link Category#deleteCategory(Category)}.
+   * 
+   * @param category the category to remove (must be invalid)
+   * 
+   * @throws IllegalArgumentException if the category is valid
+   */
+  protected void removeCateory(Category category) {
+    checkNotNull(category);
+    checkArgument(!category.isValid(), "Category is still valid.");
+    category.deleteObserver(this);
     categories.remove(category);
+  }
+
+  /**
+   * Visible for testing.
+   */
+  protected void clearCategories() {
+    categories.clear();
+  }
+
+  @Override
+  public void update(Observable o, Object arg) {
+    // Observes its accounts
+    if (o instanceof Account) {
+      Account account = (Account) o;
+      // The only change we care about is deletion
+      if (!account.isValid()) {
+        // In which case we remove the account
+        removeAccount(account);
+      }
+    }
+
+    // Observes its categories
+    else if (o instanceof Category) {
+      Category category = (Category) o;
+      // The only change we care about is deletion
+      if (!category.isValid()) {
+        // In which case we remove the category
+        removeCateory(category);
+      }
+    }
   }
 }

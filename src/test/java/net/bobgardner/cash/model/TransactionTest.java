@@ -30,88 +30,161 @@ import java.util.SortedSet;
  * @author wrg007 (Bob Gardner)
  */
 public class TransactionTest extends TestCase {
+  private Account account;
+  private Category category;
+
+  @Override
+  public void setUp() {
+    Cashbox.INSTANCE.clearAccounts();
+    Cashbox.INSTANCE.clearCategories();
+    Account.resetCounter();
+    Transaction.resetCounter();
+    LineItem.resetCounter();
+    Category.resetCounter();
+    account = Account.newAccount("name", "institution", "number", Account.Type.CHECKING, "notes");
+    category = Category.newCategory("name", "desc");
+  }
+
   public void testInstantiation() {
-    new Transaction(-1, new DateMidnight("2008-01-12"));
+    Transaction.newTransaction(account, new DateMidnight("2008-01-12"), "payee", "checkNr");
   }
 
   public void testInstantiation_nullDate() {
     try {
-      new Transaction(-1, null);
+      Transaction.newTransaction(account, null, "payee", "checkNr");
+      fail("NullPointerException expected for null date");
     } catch (NullPointerException e) {
       // exception expected
-      return;
     }
-    fail("NullPointerException expected for null date");
+  }
+
+  public void testInstantiation_nullPayee() {
+    try {
+      Transaction.newTransaction(account, new DateMidnight(), null, "checkNr");
+      fail("NullPointerException expected for null payee");
+    } catch (NullPointerException e) {
+      // exception expected
+    }
+  }
+
+  public void testInstantiation_nullCheckNr() {
+    try {
+      Transaction.newTransaction(account, new DateMidnight(), "payee", null);
+      fail("NullPointerException epxected for null check number");
+    } catch (NullPointerException e) {
+      // exception expected
+    }
   }
 
   public void testId() {
-    Transaction t = new Transaction(-1, new DateMidnight("2008-01-12"));
-    assertEquals(-1, t.getId());
-    t = new Transaction(3, new DateMidnight("2009-12-4"));
-    assertEquals(3, t.getId());
-    t = new Transaction(-7, new DateMidnight("1998-3-4"));
-    assertEquals(-7, t.getId());
+    Transaction t =
+        Transaction.newTransaction(account, new DateMidnight("2008-01-12"), "payee", "checkNr");
+    assertEquals(0, t.getId());
+    t = Transaction.newTransaction(account, new DateMidnight("2009-12-4"), "payee", "checkNr");
+    assertEquals(1, t.getId());
+    t = Transaction.newTransaction(account, new DateMidnight("1998-3-4"), "payee", "checkNr");
+    assertEquals(2, t.getId());
   }
 
   public void testDate() {
-    Transaction t = new Transaction(-1, new DateMidnight("2010-03-25"));
+    Transaction t =
+        Transaction.newTransaction(account, new DateMidnight("2010-03-25"), "payee", "checkNr");
     assertEquals(new DateMidnight("2010-03-25"), t.getDate());
     DateMidnight d = new DateMidnight("1492-08-18");
+
     t.setDate(d);
-    assertEquals(d, t.getDate());
+    assertEquals(new DateMidnight("1492-08-18"), t.getDate());
+
+    try {
+      t.setDate(null);
+      fail("NullPointerException expected for null date");
+    } catch (NullPointerException e) {
+      // exception expected
+    }
+  }
+
+  public void testPayee() {
+    Transaction t = Transaction.newTransaction(account, new DateMidnight(), "payee", "checkNr");
+    assertEquals("payee", t.getPayee());
+
+    t.setPayee("another one");
+    assertEquals("another one", t.getPayee());
+
+    try {
+      t.setPayee(null);
+      fail("NullPointerException expected for null payee");
+    } catch (NullPointerException e) {
+      // exception expected
+    }
+  }
+
+  public void testCheckNr() {
+    Transaction t = Transaction.newTransaction(account, new DateMidnight(), "payee", "checkNr");
+    assertEquals("checkNr", t.getCheckNr());
+
+    t.setCheckNr("42");
+    assertEquals("42", t.getCheckNr());
+
+    try {
+      t.setCheckNr(null);
+      fail("NullPointerExpection expected for null check number");
+    } catch (NullPointerException e) {
+      // exception expected
+    }
   }
 
   public void testDescription() {
-    Transaction t = new Transaction(18, new DateMidnight("1992-04-29"));
+    Transaction t =
+        Transaction.newTransaction(account, new DateMidnight("1992-04-29"), "payee", "checkNr");
     assertEquals("...", t.getDescription());
   }
 
   public void testItems() {
-    Transaction t = new Transaction(0, new DateMidnight());
-    LineItem item = new LineItem(-1, new BigDecimal("3"), new Category(-1, "name", "desc"), "desc");
-    t.addItem(item);
+    Transaction t = Transaction.newTransaction(account, new DateMidnight(), "payee", "checkNr");
+    LineItem item = LineItem.newLineItem(t, new BigDecimal("3"), category, "desc");
 
     SortedSet<LineItem> items = t.getItems();
     assertEquals(1, items.size());
     assertEquals(item, items.iterator().next());
 
-    boolean passed = false;
+    LineItem.deleteLineItem(item);
     try {
-      t.addItem(new LineItem(-1, new BigDecimal("5"), new Category(-2, "name", "desc"), "desc"));
+      t.addItem(item);
+      fail("IllegalArgumentException expected for invalid LineItem");
     } catch (IllegalArgumentException e) {
       // exception expected
-      passed = true;
     }
-    assertTrue("IllegalArgumentException expected for duplicate LineItem", passed);
-    assertEquals(1, items.size());
+    assertEquals(0, items.size());
 
-    t.addItem(new LineItem(4, new BigDecimal("1"), new Category(9, "", ""), "desc"));
-    t.addItem(new LineItem(19, BigDecimal.TEN, new Category(8, "", ""), "desc"));
-    assertEquals(3, items.size());
+    LineItem.newLineItem(t, new BigDecimal("1"), category, "desc");
+    LineItem.newLineItem(t, BigDecimal.TEN, category, "desc");
+    assertEquals(2, items.size());
   }
 
   public void testCompare() {
-    Transaction t1 = new Transaction(5, new DateMidnight());
-    Transaction t2 = new Transaction(-45, new DateMidnight());
-    assertTrue(t1.compareTo(t2) > 0);
-    assertTrue(t2.compareTo(t1) < 0);
+    Transaction t1 = Transaction.newTransaction(account, new DateMidnight(), "payee", "checkNr");
+    Transaction t2 = Transaction.newTransaction(account, new DateMidnight(), "payee", "checkNr");
+    assertTrue(t1.compareTo(t2) < 0);
+    assertTrue(t2.compareTo(t1) > 0);
 
-    t2 = new Transaction(5, new DateMidnight());
+    Transaction.resetCounter();
+    t2 = Transaction.newTransaction(account, new DateMidnight(), "payee", "checkNr");
     assertTrue(t1.compareTo(t2) == 0);
     assertTrue(t2.compareTo(t1) == 0);
 
-    t2 = new Transaction(6, new DateMidnight());
-    assertTrue(t1.compareTo(t2) < 0);
-    assertTrue(t2.compareTo(t1) > 0);
+    t1 = Transaction.newTransaction(account, new DateMidnight(), "payee", "checkNr");
+    assertTrue(t1.compareTo(t2) > 0);
+    assertTrue(t2.compareTo(t1) < 0);
   }
 
   public void testEquals() {
-    Transaction t1 = new Transaction(5, new DateMidnight());
-    Transaction t2 = new Transaction(5, new DateMidnight());
+    Transaction t1 = Transaction.newTransaction(account, new DateMidnight(), "payee", "checkNr");
+    Transaction.resetCounter();
+    Transaction t2 = Transaction.newTransaction(account, new DateMidnight(), "payee", "checkNr");
     assertEquals(t1, t2);
     assertEquals(t2, t1);
 
-    t2 = new Transaction(6, new DateMidnight());
+    t2 = Transaction.newTransaction(account, new DateMidnight(), "payee", "checkNr");
     assertFalse(t1.equals(t2));
     assertFalse(t2.equals(t1));
   }
