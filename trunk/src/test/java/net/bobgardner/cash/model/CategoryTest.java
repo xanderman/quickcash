@@ -25,91 +25,91 @@ import junit.framework.TestCase;
  * @author wrg007 (Bob Gardner)
  */
 public class CategoryTest extends TestCase {
+  @Override
+  public void setUp() {
+    Category.resetCounter();
+    Cashbox.INSTANCE.clearCategories();
+  }
+
   public void testInstantiation() {
-    new Category(0, "name", "desc");
+    Category.newCategory("name", "desc");
   }
 
   public void testInstantiation_nullName() {
     try {
-      new Category(0, null, "desc");
+      Category.newCategory(null, "desc");
+      fail("NullPointerException expected for null name");
     } catch (NullPointerException e) {
       // exception expected
-      return;
     }
-    fail("NullPointerException expected for null name");
   }
 
   public void testInstantiation_nullDescription() {
     try {
-      new Category(0, "name", null);
+      Category.newCategory("name", null);
+      fail("NullPointerException expected for null description");
     } catch (NullPointerException e) {
       // exception expected
-      return;
     }
-    fail("NullPointerException expected for null description");
   }
 
   public void testId() {
-    Category cat = new Category(0, "name", "desc");
+    Category cat = Category.newCategory("name", "desc");
     assertEquals(0, cat.getId());
-    cat = new Category(-4, "name", "desc");
-    assertEquals(-4, cat.getId());
-    cat = new Category(5, "name", "desc");
-    assertEquals(5, cat.getId());
+    cat = Category.newCategory("name1", "desc1");
+    assertEquals(1, cat.getId());
+    cat = Category.newCategory("name2", "desc2");
+    assertEquals(2, cat.getId());
   }
 
   public void testName() {
-    Category cat = new Category(0, "name", "desc");
+    Category cat = Category.newCategory("name", "desc");
     assertEquals("name", cat.getName());
     cat.setName("another");
     assertEquals("another", cat.getName());
 
     try {
       cat.setName(null);
+      fail("NullPointerException expected for null name");
     } catch (NullPointerException e) {
       // exception expected
-      return;
     }
-    fail("NullPointerException expected for null name");
   }
 
   public void testDescription() {
-    Category cat = new Category(0, "name", "desc");
+    Category cat = Category.newCategory("name", "desc");
     assertEquals("desc", cat.getDescription());
     cat.setDescription("description");
     assertEquals("description", cat.getDescription());
 
     try {
       cat.setDescription(null);
+      fail("NullPointerException expected for null description");
     } catch (NullPointerException e) {
       // exception expected
-      return;
     }
-    fail("NullPointerException expected for null description");
   }
 
   public void testCompare() {
-    Category cat1 = new Category(0, "b", "desc");
-    Category cat2 = new Category(0, "b", "asdf");
-    assertEquals(cat1, cat2);
-    assertEquals(cat2, cat1);
+    Category cat1 = Category.newCategory("a", "desc");
+    Category cat2 = Category.newCategory("b", "asdf");
 
-    cat1 = new Category(0, "a", "desc");
     assertTrue(cat1.compareTo(cat2) < 0);
     assertTrue(cat2.compareTo(cat1) > 0);
 
-    cat1 = new Category(0, "c", "desc");
+    cat1 = Category.newCategory("c", "desc");
     assertTrue(cat1.compareTo(cat2) > 0);
     assertTrue(cat2.compareTo(cat1) < 0);
   }
 
   public void testEquals() {
-    Category cat1 = new Category(0, "a", "desc");
-    Category cat2 = new Category(0, "b", "desc");
+    Category cat1 = Category.newCategory("a", "desc");
+    Category.resetCounter();
+    Category cat2 = Category.newCategory("b", "desc");
     assertEquals(cat1, cat2);
     assertEquals(cat2, cat1);
 
-    cat1 = new Category(1, "b", "desc");
+    cat1 = Category.newCategory("b", "desc");
     assertFalse(cat1.equals(cat2));
     assertFalse(cat2.equals(cat1));
   }

@@ -18,8 +18,11 @@
 package net.bobgardner.cash.model;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import org.joda.time.DateMidnight;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * A transfer is a transaction between two Accounts
@@ -28,7 +31,32 @@ import org.joda.time.DateMidnight;
  */
 public class Transfer extends Transaction {
   private final Account destAccount;
-  private final Transfer destTransfer;
+  private Transfer destTransfer;
+
+  /**
+   * Create a new transaction with the given information. Creates the
+   * transaction, stores it in the database (thus retrieving an id), and adds it
+   * to {@link Cashbox}.
+   * 
+   * @throws IllegalArgumentException if any uniqueness constraints are violated
+   */
+  public static Transfer newTransfer(Account account, Account destAccount, Transfer destTransfer,
+      DateMidnight date, String payee, String checkNr) {
+    // TODO interact with database
+    Transfer transfer = new Transfer(date, destAccount, destTransfer, payee, checkNr);
+    account.addTransaction(transfer);
+    return transfer;
+  }
+
+  public static Transfer[] newTransactionPair(Account srcAccount, Account destAccount,
+      DateMidnight date, String payee, String checkNr) {
+    // TODO interact with database
+    // TODO fix chicke-and-egg
+    Transfer src = newTransfer(srcAccount, destAccount, null, date, payee, checkNr);
+    Transfer dest = newTransfer(destAccount, srcAccount, src, date, payee, checkNr);
+    src.destTransfer = dest;
+    return new Transfer[] {src, dest};
+  }
 
   /**
    * Create a transfer between two accounts.
@@ -39,10 +67,11 @@ public class Transfer extends Transaction {
    * @param destTransfer the corresponding transfer in the destination
    *        {@link Account}
    */
-  public Transfer(int id, DateMidnight date, Account destAccount, Transfer destTransfer) {
-    super(id, date);
+  private Transfer(DateMidnight date, Account destAccount, Transfer destTransfer, String payee,
+      String checkNr) {
+    super(date, payee, checkNr);
     this.destAccount = checkNotNull(destAccount);
-    this.destTransfer = checkNotNull(destTransfer);
+    this.destTransfer = destTransfer;
   }
 
   /**
@@ -51,6 +80,7 @@ public class Transfer extends Transaction {
    * @return the {@link Account} this transfer goes to
    */
   public Account getDestAccount() {
+    checkState(isValid(), "This transaction has been deleted.");
     return destAccount;
   }
 
@@ -60,11 +90,19 @@ public class Transfer extends Transaction {
    * @return the corresponding transfer in the destination {@link Account}
    */
   public Transfer getDestTransfer() {
+    checkState(isValid(), "This transaction has been deleted.");
     return destTransfer;
   }
 
   @Override
   public String getDescription() {
+    checkState(isValid(), "This transaction has been deleted.");
     return "Transfer with " + destAccount.getName();
+  }
+
+  @Override
+  public void setDescription(String description) {
+    checkState(isValid(), "This transaction has been deleted.");
+    throw new NotImplementedException();
   }
 }

@@ -19,6 +19,8 @@ package net.bobgardner.cash.model;
 
 import junit.framework.TestCase;
 
+import org.joda.time.DateMidnight;
+
 import java.math.BigDecimal;
 
 /**
@@ -27,51 +29,65 @@ import java.math.BigDecimal;
  * @author wrg007 (Bob Gardner)
  */
 public class LineItemTest extends TestCase {
+  private Account account;
+  private Transaction transaction;
+  private Category category;
+
+  @Override
+  public void setUp() {
+    Cashbox.INSTANCE.clearAccounts();
+    Cashbox.INSTANCE.clearCategories();
+    Account.resetCounter();
+    Transaction.resetCounter();
+    LineItem.resetCounter();
+    Category.resetCounter();
+    account = Account.newAccount("name", "institution", "number", Account.Type.CHECKING, "notes");
+    transaction = Transaction.newTransaction(account, new DateMidnight(), "payee", "checkNr");
+    category = Category.newCategory("name", "desc");
+  }
+
   public void testInstantiation() {
-    new LineItem(-1, new BigDecimal("7.45"), new Category(-1, "name", "desc"), "desc");
+    LineItem.newLineItem(transaction, new BigDecimal("7.45"), category, "desc");
   }
 
   public void testInstantiation_nullAmount() {
     try {
-      new LineItem(5, null, new Category(3, "name", "desc"), "desc");
+      LineItem.newLineItem(transaction, null, category, "desc");
+      fail("NullPointerException expected for null amount");
     } catch (NullPointerException e) {
       // exception expected
-      return;
     }
-    fail("NullPointerException expected for null amount");
   }
 
   public void testInstantiation_nullCategory() {
     try {
-      new LineItem(15, new BigDecimal("1"), null, "desc");
+      LineItem.newLineItem(transaction, new BigDecimal("1"), null, "desc");
+      fail("NullPointerException expected for null category");
     } catch (NullPointerException e) {
       // exception expected
-      return;
     }
-    fail("NullPointerException expected for null category");
   }
 
   public void testInstantiation_nullDescription() {
     try {
-      new LineItem(15, new BigDecimal("1"), new Category(-1, "name", "desc"), null);
+      LineItem.newLineItem(transaction, new BigDecimal("1"), category, null);
+      fail("NullPointerException expected for null description");
     } catch (NullPointerException e) {
       // exception expected
-      return;
     }
-    fail("NullPointerException expected for null description");
   }
 
   public void testId() {
-    LineItem item = new LineItem(-1, new BigDecimal("3"), new Category(-1, "name", "desc"), "desc");
-    assertEquals(-1, item.getId());
-    item = new LineItem(3, new BigDecimal("4"), new Category(-1, "name", "desc"), "desc");
-    assertEquals(3, item.getId());
-    item = new LineItem(-4, new BigDecimal("4"), new Category(-1, "name", "desc"), "desc");
-    assertEquals(-4, item.getId());
+    LineItem item = LineItem.newLineItem(transaction, new BigDecimal("3"), category, "desc");
+    assertEquals(0, item.getId());
+    item = LineItem.newLineItem(transaction, new BigDecimal("4"), category, "desc");
+    assertEquals(1, item.getId());
+    item = LineItem.newLineItem(transaction, new BigDecimal("4"), category, "desc");
+    assertEquals(2, item.getId());
   }
 
   public void testAmount() {
-    LineItem item = new LineItem(-1, new BigDecimal("7"), new Category(-1, "name", "desc"), "desc");
+    LineItem item = LineItem.newLineItem(transaction, new BigDecimal("7"), category, "desc");
     assertEquals(new BigDecimal("7"), item.getAmount());
 
     item.setAmount(new BigDecimal("6"));
@@ -79,55 +95,52 @@ public class LineItemTest extends TestCase {
 
     try {
       item.setAmount(null);
+      fail("NullPointerException expected for null amount");
     } catch (NullPointerException e) {
       // exception expected
-      return;
     }
-    fail("NullPointerException expected for null amount");
   }
 
   public void testCategory() {
-    LineItem item = new LineItem(-1, new BigDecimal("1"), new Category(-1, "name", "desc"), "desc");
-    assertEquals(new Category(-1, "name", "desc"), item.getCategory());
+    LineItem item = LineItem.newLineItem(transaction, new BigDecimal("1"), category, "desc");
+    assertEquals(category, item.getCategory());
 
-    item.setCategory(new Category(2, "Food", "for eating"));
-    assertEquals(new Category(2, "Food", "for eating"), item.getCategory());
+    Category cat = Category.newCategory("Food", "for eating");
+    item.setCategory(cat);
+    assertEquals(cat, item.getCategory());
 
     try {
       item.setCategory(null);
+      fail("NullPointerException expected for null category");
     } catch (NullPointerException e) {
       // exception expected
-      return;
     }
-    fail("NullPointerException expected for null category");
   }
 
   public void testCompare() {
-    LineItem item1 =
-        new LineItem(-1, new BigDecimal("1"), new Category(-1, "name", "desc"), "desc");
-    LineItem item2 =
-        new LineItem(-1, new BigDecimal("1"), new Category(-1, "name", "desc"), "desc");
+    LineItem item1 = LineItem.newLineItem(transaction, new BigDecimal("1"), category, "desc");
+    LineItem.resetCounter();
+    LineItem item2 = LineItem.newLineItem(transaction, new BigDecimal("1"), category, "desc");
     assertEquals(0, item1.compareTo(item2));
     assertEquals(0, item2.compareTo(item1));
 
-    item1 = new LineItem(0, new BigDecimal("1"), new Category(-1, "name", "desc"), "desc");
+    item1 = LineItem.newLineItem(transaction, new BigDecimal("1"), category, "desc");
     assertTrue(item1.compareTo(item2) > 0);
     assertTrue(item2.compareTo(item1) < 0);
 
-    item1 = new LineItem(-2, new BigDecimal("1"), new Category(-1, "name", "desc"), "desc");
+    item2 = LineItem.newLineItem(transaction, new BigDecimal("1"), category, "desc");
     assertTrue(item1.compareTo(item2) < 0);
     assertTrue(item2.compareTo(item1) > 0);
   }
 
   public void testEquals() {
-    LineItem item1 =
-        new LineItem(-1, new BigDecimal("1"), new Category(-1, "name", "desc"), "desc");
-    LineItem item2 =
-        new LineItem(-1, new BigDecimal("1"), new Category(-1, "name", "desc"), "desc");
+    LineItem item1 = LineItem.newLineItem(transaction, new BigDecimal("1"), category, "desc");
+    LineItem.resetCounter();
+    LineItem item2 = LineItem.newLineItem(transaction, new BigDecimal("1"), category, "desc");
     assertEquals(item1, item2);
     assertEquals(item2, item1);
 
-    item1 = new LineItem(0, new BigDecimal("1"), new Category(-1, "name", "desc"), "desc");
+    item1 = LineItem.newLineItem(transaction, new BigDecimal("1"), category, "desc");
     assertFalse(item1.equals(item2));
     assertFalse(item2.equals(item1));
   }
