@@ -41,7 +41,9 @@ public class LineItemTest extends TestCase {
     Transaction.resetCounter();
     LineItem.resetCounter();
     Category.resetCounter();
-    account = Account.newAccount("name", "institution", "number", Account.Type.CHECKING, "notes");
+    account =
+        Account.newAccount(Cashbox.INSTANCE, "name", "institution", "number",
+            Account.Type.CHECKING, "notes");
     transaction = Transaction.newTransaction(account, new DateMidnight(), "payee", "checkNr");
     category = Category.newCategory("name", "desc");
   }

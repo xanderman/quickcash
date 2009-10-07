@@ -33,13 +33,15 @@ public class AccountTest extends TestCase {
 
   public void testInstantiation() {
     Account account =
-        Account.newAccount("name", "institution", "number", Account.Type.CHECKING, "notes");
+        Account.newAccount(Cashbox.INSTANCE, "name", "institution", "number",
+            Account.Type.CHECKING, "notes");
     assertTrue(Cashbox.INSTANCE.getAccounts().contains(account));
   }
 
   public void testInstantiation_nullName() {
     try {
-      Account.newAccount(null, "institution", "number", Account.Type.CHECKING, "notes");
+      Account.newAccount(Cashbox.INSTANCE, null, "institution", "number", Account.Type.CHECKING,
+          "notes");
       fail("NullPointerException expected for null name");
     } catch (NullPointerException e) {
       // exception expected
@@ -48,7 +50,7 @@ public class AccountTest extends TestCase {
 
   public void testInstantiation_nullInstitution() {
     try {
-      Account.newAccount("name", null, "number", Account.Type.CHECKING, "notes");
+      Account.newAccount(Cashbox.INSTANCE, "name", null, "number", Account.Type.CHECKING, "notes");
       fail("NullPointerException expected for null institution");
     } catch (NullPointerException e) {
       // exception expected
@@ -57,7 +59,8 @@ public class AccountTest extends TestCase {
 
   public void testInstantiation_nullNumber() {
     try {
-      Account.newAccount("name", "institution", null, Account.Type.CHECKING, "notes");
+      Account.newAccount(Cashbox.INSTANCE, "name", "institution", null, Account.Type.CHECKING,
+          "notes");
       fail("NullPointerException expected for null number");
     } catch (NullPointerException e) {
       // exception expected
@@ -66,7 +69,7 @@ public class AccountTest extends TestCase {
 
   public void testInstantiation_nullType() {
     try {
-      Account.newAccount("name", "institution", "number", null, "notes");
+      Account.newAccount(Cashbox.INSTANCE, "name", "institution", "number", null, "notes");
       fail("NullPointerException expected for null type");
     } catch (NullPointerException e) {
       // exception expected
@@ -75,7 +78,8 @@ public class AccountTest extends TestCase {
 
   public void testInstantiation_nullNotes() {
     try {
-      Account.newAccount("name", "institution", "number", Account.Type.CHECKING, null);
+      Account.newAccount(Cashbox.INSTANCE, "name", "institution", "number", Account.Type.CHECKING,
+          null);
       fail("NullPointerException expected for null notes");
     } catch (NullPointerException e) {
       // exception expected
@@ -84,14 +88,17 @@ public class AccountTest extends TestCase {
 
   public void testId() {
     Account acc =
-        Account.newAccount("name", "institution", "number", Account.Type.CHECKING, "notes");
+        Account.newAccount(Cashbox.INSTANCE, "name", "institution", "number",
+            Account.Type.CHECKING, "notes");
     assertEquals(0, acc.getId());
-    acc = Account.newAccount("name2", "institution2", "number2", Account.Type.SAVINGS, "notes");
+    acc =
+        Account.newAccount(Cashbox.INSTANCE, "name2", "institution2", "number2",
+            Account.Type.SAVINGS, "notes");
     assertEquals(1, acc.getId());
   }
 
   public void testName() {
-    Account acc = Account.newAccount("name", "", "", Account.Type.CHECKING, "");
+    Account acc = Account.newAccount(Cashbox.INSTANCE, "name", "", "", Account.Type.CHECKING, "");
     assertEquals("name", acc.getName());
     acc.setName("");
     assertEquals("", acc.getName());
@@ -106,7 +113,8 @@ public class AccountTest extends TestCase {
   }
 
   public void testInstitution() {
-    Account acc = Account.newAccount("", "institution", "", Account.Type.CHECKING, "");
+    Account acc =
+        Account.newAccount(Cashbox.INSTANCE, "", "institution", "", Account.Type.CHECKING, "");
     assertEquals("institution", acc.getInstitution());
     acc.setInstitution("");
     assertEquals("", acc.getInstitution());
@@ -121,7 +129,7 @@ public class AccountTest extends TestCase {
   }
 
   public void testNumber() {
-    Account acc = Account.newAccount("", "", "number", Account.Type.CHECKING, "");
+    Account acc = Account.newAccount(Cashbox.INSTANCE, "", "", "number", Account.Type.CHECKING, "");
     assertEquals("number", acc.getNumber());
     acc.setNumber("");
     assertEquals("", acc.getNumber());
@@ -136,7 +144,7 @@ public class AccountTest extends TestCase {
   }
 
   public void testType() {
-    Account acc = Account.newAccount("", "", "", Account.Type.CHECKING, "");
+    Account acc = Account.newAccount(Cashbox.INSTANCE, "", "", "", Account.Type.CHECKING, "");
     assertEquals(Account.Type.CHECKING, acc.getType());
     acc.setType(Account.Type.SAVINGS);
     assertEquals(Account.Type.SAVINGS, acc.getType());
@@ -151,7 +159,7 @@ public class AccountTest extends TestCase {
   }
 
   public void testNotes() {
-    Account acc = Account.newAccount("", "", "", Account.Type.CHECKING, "notes");
+    Account acc = Account.newAccount(Cashbox.INSTANCE, "", "", "", Account.Type.CHECKING, "notes");
     assertEquals("notes", acc.getNotes());
     acc.setNotes("");
     assertEquals("", acc.getNotes());
@@ -166,32 +174,32 @@ public class AccountTest extends TestCase {
   }
 
   public void testCompare() {
-    Account acc1 = Account.newAccount("b", "", "", Account.Type.CHECKING, "");
-    Account acc2 = Account.newAccount("c", "n", "", Account.Type.SAVINGS, "");
+    Account acc1 = Account.newAccount(Cashbox.INSTANCE, "b", "", "", Account.Type.CHECKING, "");
+    Account acc2 = Account.newAccount(Cashbox.INSTANCE, "c", "n", "", Account.Type.SAVINGS, "");
     assertTrue(acc1.compareTo(acc2) < 0);
     assertTrue(acc2.compareTo(acc1) > 0);
 
     Account.resetCounter();
     Cashbox.INSTANCE.clearAccounts();
-    acc2 = Account.newAccount("b", "", "psp", Account.Type.CHECKING, "asef");
+    acc2 = Account.newAccount(Cashbox.INSTANCE, "b", "", "psp", Account.Type.CHECKING, "asef");
     assertTrue(acc1.compareTo(acc2) == 0);
     assertTrue(acc2.compareTo(acc1) == 0);
 
-    acc1 = Account.newAccount("s", "m", "", Account.Type.CHECKING, "");
-    acc2 = Account.newAccount("m", "e", "", Account.Type.CHECKING, "");
+    acc1 = Account.newAccount(Cashbox.INSTANCE, "s", "m", "", Account.Type.CHECKING, "");
+    acc2 = Account.newAccount(Cashbox.INSTANCE, "m", "e", "", Account.Type.CHECKING, "");
     assertTrue(acc1.compareTo(acc2) > 0);
     assertTrue(acc2.compareTo(acc1) < 0);
   }
 
   public void testEquals() {
-    Account acc1 = Account.newAccount("b", "", "", Account.Type.CHECKING, "");
-    Account acc2 = Account.newAccount("c", "d", "", Account.Type.SAVINGS, "");
+    Account acc1 = Account.newAccount(Cashbox.INSTANCE, "b", "", "", Account.Type.CHECKING, "");
+    Account acc2 = Account.newAccount(Cashbox.INSTANCE, "c", "d", "", Account.Type.SAVINGS, "");
     assertFalse(acc1.equals(acc2));
     assertFalse(acc2.equals(acc1));
 
     Account.resetCounter();
     Cashbox.INSTANCE.clearAccounts();
-    acc2 = Account.newAccount("", "c", "", Account.Type.CHECKING, "");
+    acc2 = Account.newAccount(Cashbox.INSTANCE, "", "c", "", Account.Type.CHECKING, "");
     assertEquals(acc1, acc2);
     assertEquals(acc2, acc1);
   }

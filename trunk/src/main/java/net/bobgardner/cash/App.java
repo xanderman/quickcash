@@ -17,10 +17,7 @@
 
 package net.bobgardner.cash;
 
-import net.bobgardner.cash.model.Account;
-import net.bobgardner.cash.model.Category;
-import net.bobgardner.cash.model.LineItem;
-import net.bobgardner.cash.model.Transaction;
+import net.bobgardner.cash.model.*;
 import net.bobgardner.cash.view.AccountView;
 
 import org.joda.time.DateMidnight;
@@ -48,12 +45,14 @@ public class App {
     Category c0 = Category.newCategory("Name0", "Desc0");
     Category c1 = Category.newCategory("Name1", "Desc1");
     Account account =
-        Account.newAccount("WF Checking", "Wells Fargo", "123456789", Account.Type.CHECKING, "");
+        Account.newAccount(Cashbox.INSTANCE, "WF Checking", "Wells Fargo", "123456789",
+            Account.Type.CHECKING, "");
     Transaction t = Transaction.newTransaction(account, new DateMidnight(), "Albertsons", "101");
     LineItem.newLineItem(t, BigDecimal.TEN, c0, "Line Item 0");
     LineItem.newLineItem(t, BigDecimal.TEN, c1, "Line Item 1");
     t = Transaction.newTransaction(account, new DateMidnight(), "Sams Club", "");
     LineItem.newLineItem(t, new BigDecimal("-10.00"), c1, "Line Item 0");
-    Account.newAccount("WF Savings", "Wells Fargo", "234567891", Account.Type.SAVINGS, "");
+    Account.newAccount(Cashbox.INSTANCE, "WF Savings", "Wells Fargo", "234567891",
+        Account.Type.SAVINGS, "");
   }
 }
