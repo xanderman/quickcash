@@ -73,12 +73,12 @@ public final class Account extends Observable implements Comparable<Account>, Ob
    * 
    * @throws IllegalArgumentException if any uniqueness constraints are violated
    */
-  public static Account newAccount(String name, String institution, String number, Type type,
-      String notes) {
+  public static Account newAccount(Cashbox cashbox, String name, String institution, String number,
+      Type type, String notes) {
     // TODO interact with database
     Account account = new Account(id_counter++, name, institution, number, type, notes);
     account.valid = true;
-    Cashbox.INSTANCE.addAccount(account);
+    cashbox.addAccount(account);
     return account;
   }
 

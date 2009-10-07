@@ -74,7 +74,7 @@ public enum Cashbox implements Observer {
   protected void removeAccount(Account account) {
     checkNotNull(account);
     checkArgument(!account.isValid(), "Account is still valid.");
-    account.deleteObserver(null);
+    account.deleteObserver(this);
     accounts.remove(account);
   }
 
