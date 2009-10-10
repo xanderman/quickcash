@@ -100,8 +100,14 @@ public class AccountTest extends TestCase {
   public void testName() {
     Account acc = Account.newAccount(Cashbox.INSTANCE, "name", "", "", Account.Type.CHECKING, "");
     assertEquals("name", acc.getName());
-    acc.setName("");
-    assertEquals("", acc.getName());
+
+    try {
+      acc.setName("");
+      fail("IllegalArgumentException expected for empty name");
+    } catch (IllegalArgumentException e) {
+      // exception expected
+    }
+    assertEquals("name", acc.getName());
 
     try {
       acc.setName(null);
@@ -109,12 +115,15 @@ public class AccountTest extends TestCase {
     } catch (NullPointerException e) {
       // exception expected
     }
-    assertEquals("", acc.getName());
+    assertEquals("name", acc.getName());
+
+    acc.setName("new name");
+    assertEquals("new name", acc.getName());
   }
 
   public void testInstitution() {
     Account acc =
-        Account.newAccount(Cashbox.INSTANCE, "", "institution", "", Account.Type.CHECKING, "");
+        Account.newAccount(Cashbox.INSTANCE, "name", "institution", "", Account.Type.CHECKING, "");
     assertEquals("institution", acc.getInstitution());
     acc.setInstitution("");
     assertEquals("", acc.getInstitution());
@@ -129,7 +138,7 @@ public class AccountTest extends TestCase {
   }
 
   public void testNumber() {
-    Account acc = Account.newAccount(Cashbox.INSTANCE, "", "", "number", Account.Type.CHECKING, "");
+    Account acc = Account.newAccount(Cashbox.INSTANCE, "name", "", "number", Account.Type.CHECKING, "");
     assertEquals("number", acc.getNumber());
     acc.setNumber("");
     assertEquals("", acc.getNumber());
@@ -144,7 +153,7 @@ public class AccountTest extends TestCase {
   }
 
   public void testType() {
-    Account acc = Account.newAccount(Cashbox.INSTANCE, "", "", "", Account.Type.CHECKING, "");
+    Account acc = Account.newAccount(Cashbox.INSTANCE, "name", "", "", Account.Type.CHECKING, "");
     assertEquals(Account.Type.CHECKING, acc.getType());
     acc.setType(Account.Type.SAVINGS);
     assertEquals(Account.Type.SAVINGS, acc.getType());
@@ -159,7 +168,7 @@ public class AccountTest extends TestCase {
   }
 
   public void testNotes() {
-    Account acc = Account.newAccount(Cashbox.INSTANCE, "", "", "", Account.Type.CHECKING, "notes");
+    Account acc = Account.newAccount(Cashbox.INSTANCE, "name", "", "", Account.Type.CHECKING, "notes");
     assertEquals("notes", acc.getNotes());
     acc.setNotes("");
     assertEquals("", acc.getNotes());
@@ -199,7 +208,7 @@ public class AccountTest extends TestCase {
 
     Account.resetCounter();
     Cashbox.INSTANCE.clearAccounts();
-    acc2 = Account.newAccount(Cashbox.INSTANCE, "", "c", "", Account.Type.CHECKING, "");
+    acc2 = Account.newAccount(Cashbox.INSTANCE, "name", "c", "", Account.Type.CHECKING, "");
     assertEquals(acc1, acc2);
     assertEquals(acc2, acc1);
   }
