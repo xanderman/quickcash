@@ -34,28 +34,22 @@ public class Transfer extends Transaction {
   private Transfer destTransfer;
 
   /**
-   * Create a new transaction with the given information. Creates the
-   * transaction, stores it in the database (thus retrieving an id), and adds it
+   * Create a new transfer and its pair with the given information. Creates the
+   * transfers, stores them in the database (thus retrieving ids), and adds them
    * to {@link Cashbox}.
    * 
    * @throws IllegalArgumentException if any uniqueness constraints are violated
    */
-  public static Transfer newTransfer(Account account, Account destAccount, Transfer destTransfer,
-      DateMidnight date, String payee, String checkNr) {
+  public static Transfer newTransfer(Account account, Account destAccount, DateMidnight date,
+      String payee, String checkNr) {
     // TODO interact with database
+    // TODO possible chicken-and-egg problem
+    Transfer destTransfer = new Transfer(date, account, null, payee, checkNr);
     Transfer transfer = new Transfer(date, destAccount, destTransfer, payee, checkNr);
+    destTransfer.destTransfer = transfer;
+    destAccount.addTransaction(destTransfer);
     account.addTransaction(transfer);
     return transfer;
-  }
-
-  public static Transfer[] newTransactionPair(Account srcAccount, Account destAccount,
-      DateMidnight date, String payee, String checkNr) {
-    // TODO interact with database
-    // TODO fix chicke-and-egg
-    Transfer src = newTransfer(srcAccount, destAccount, null, date, payee, checkNr);
-    Transfer dest = newTransfer(destAccount, srcAccount, src, date, payee, checkNr);
-    src.destTransfer = dest;
-    return new Transfer[] {src, dest};
   }
 
   /**

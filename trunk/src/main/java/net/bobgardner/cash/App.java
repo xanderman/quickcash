@@ -17,6 +17,8 @@
 
 package net.bobgardner.cash;
 
+import static javax.swing.SwingUtilities.invokeLater;
+
 import net.bobgardner.cash.model.*;
 import net.bobgardner.cash.view.AccountView;
 
@@ -34,7 +36,7 @@ public class App {
     // TODO: Load data from database
     makeFakeData();
 
-    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+    invokeLater(new Runnable() {
       public void run() {
         new AccountView().setVisible(true);
       }
