@@ -49,7 +49,7 @@ public class Category extends Observable implements Comparable<Category> {
   /**
    * True if this category is present in the database.
    */
-  private volatile boolean valid;
+  private volatile boolean valid = true;
 
   /**
    * Create a new category with the given information. Creates the category,
@@ -61,7 +61,6 @@ public class Category extends Observable implements Comparable<Category> {
   public static Category newCategory(String name, String description) {
     // TODO interact with the database
     Category category = new Category(id_counter++, name, description);
-    category.valid = true;
     Cashbox.INSTANCE.addCategory(category);
     return category;
   }

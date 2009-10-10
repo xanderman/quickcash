@@ -29,6 +29,7 @@ import java.util.SortedSet;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -142,6 +143,7 @@ class TransactionPane extends JScrollPane {
    */
   private static class DisclosureSelectionListener implements ListSelectionListener {
     private final JTable table;
+    private boolean isAdjusting = false;
 
     public DisclosureSelectionListener(JTable table) {
       this.table = table;
@@ -149,21 +151,18 @@ class TransactionPane extends JScrollPane {
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
-      if (e.getSource() == table.getSelectionModel() && e.getValueIsAdjusting())
-        System.out.println("\nFrom row listener");
-      else if (e.getSource() == table.getColumnModel().getSelectionModel()
-          && !e.getValueIsAdjusting())
-        System.out.println("\nFrom column listener");
-      else
-        return;
-      int row = table.getSelectedRow();
-      System.out
-          .println(e.getFirstIndex() + "-" + e.getLastIndex() + " " + e.getValueIsAdjusting());
-      System.out.println("selected: " + table.getSelectedRow() + "," + table.getSelectedColumn());
+      if (isAdjusting) return;
+      final int row = table.getSelectedRow();
       if (table.getSelectedColumn() == 0 && row >= 0) {
-        System.out.println("toggling row " + row);
-        ((DisclosureIcon) table.getModel().getValueAt(row, 0)).toggle();
-        table.removeRowSelectionInterval(row, row);
+        isAdjusting = true;
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            ((DisclosureIcon) table.getModel().getValueAt(row, 0)).toggle();
+            table.removeRowSelectionInterval(row, row);
+            isAdjusting = false;
+          }
+        });
       }
     }
   }
