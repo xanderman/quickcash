@@ -99,48 +99,52 @@ public class LineItem extends Observable implements Comparable<LineItem>, Observ
   }
 
   public int getId() {
-    checkState(valid, "This line item has been deleted.");
+    checkValidity();
     return id;
   }
 
   public BigDecimal getAmount() {
-    checkState(valid, "This line item has been deleted.");
+    checkValidity();
     return amount;
   }
 
   public void setAmount(BigDecimal amount) {
     // TODO Interact with database
-    checkState(valid, "This line item has been deleted.");
+    checkValidity();
     this.amount = checkNotNull(amount);
     setChanged();
     notifyObservers();
   }
 
   public Category getCategory() {
-    checkState(valid, "This line item has been deleted.");
+    checkValidity();
     return category;
   }
 
   public void setCategory(Category category) {
     // TODO Interact with database
-    checkState(valid, "This line item has been deleted.");
+    checkValidity();
     this.category = checkNotNull(category);
     setChanged();
     notifyObservers();
   }
 
   public String getDescription() {
-    checkState(valid, "This line item has been deleted.");
+    checkValidity();
     return description;
   }
 
   public void setDescription(String description) {
     // TODO Interact with database
-    checkState(valid, "This line item has been deleted.");
+    checkValidity();
     checkNotNull(description);
     this.description = description.trim();
     setChanged();
     notifyObservers();
+  }
+
+  protected void checkValidity() {
+    checkState(valid, "This line item has been deleted.");
   }
 
   @Override

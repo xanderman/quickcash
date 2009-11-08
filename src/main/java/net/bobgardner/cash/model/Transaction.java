@@ -117,31 +117,31 @@ public class Transaction extends Observable implements Comparable<Transaction>, 
   }
 
   public int getId() {
-    checkState(valid, "This transaction has been deleted.");
+    checkValidity();
     return id;
   }
 
   public DateMidnight getDate() {
-    checkState(valid, "This transaction has been deleted.");
+    checkValidity();
     return date;
   }
 
   public void setDate(DateMidnight date) {
     // TODO Interact with database
-    checkState(valid, "This transaction has been deleted.");
+    checkValidity();
     this.date = checkNotNull(date);
     setChanged();
     notifyObservers();
   }
 
   public String getPayee() {
-    checkState(valid, "This transaction has been deleted.");
+    checkValidity();
     return payee;
   }
 
   public void setPayee(String payee) {
     // TODO Interact with database
-    checkState(valid, "This transaction has been deleted.");
+    checkValidity();
     checkNotNull(payee);
     this.payee = payee.trim();
     setChanged();
@@ -149,13 +149,13 @@ public class Transaction extends Observable implements Comparable<Transaction>, 
   }
 
   public String getCheckNr() {
-    checkState(valid, "This transaction has been deleted.");
+    checkValidity();
     return checkNr;
   }
 
   public void setCheckNr(String checkNr) {
     // TODO Interact with database
-    checkState(valid, "This transaction has been deleted.");
+    checkValidity();
     checkNotNull(checkNr);
     this.checkNr = checkNr.trim();
     setChanged();
@@ -163,12 +163,12 @@ public class Transaction extends Observable implements Comparable<Transaction>, 
   }
 
   public SortedSet<LineItem> getItems() {
-    checkState(valid, "This transaction has been deleted.");
+    checkValidity();
     return Collections.unmodifiableSortedSet(items);
   }
 
   protected void addItem(LineItem item) {
-    checkState(valid, "This transaction has been deleted.");
+    checkValidity();
     checkNotNull(item);
     checkArgument(item.isValid(), "Line item is invalid.");
     items.add(item);
@@ -179,7 +179,7 @@ public class Transaction extends Observable implements Comparable<Transaction>, 
   }
 
   protected void removeItem(LineItem item) {
-    checkState(valid, "This transaction has been deleted.");
+    checkValidity();
     checkNotNull(item);
     checkArgument(!item.isValid(), "Line item is still valid.");
     item.deleteObserver(this);
@@ -190,24 +190,24 @@ public class Transaction extends Observable implements Comparable<Transaction>, 
   }
 
   public String getDescription() {
-    checkState(valid, "This transaction has been deleted.");
+    checkValidity();
     return items.size() == 1 ? items.first().getDescription() : "...";
   }
 
   public void setDescription(String description) {
-    checkState(valid, "This transaction has been deleted.");
+    checkValidity();
     checkState(items.size() == 1,
         "Description can only be set on transactions with exactly one line item.");
     items.first().setDescription(description);
   }
 
   public Category getCategory() {
-    checkState(valid, "This transaction has been deleted.");
+    checkValidity();
     return items.size() == 1 ? items.first().getCategory() : Category.NULL_CATEGORY;
   }
 
   public void setCategory(Category category) {
-    checkState(valid, "This transaction has been deleted.");
+    checkValidity();
     checkState(items.size() == 1,
         "Category can only be set on transactions with exactly one line item.");
     items.first().setCategory(category);
@@ -216,7 +216,7 @@ public class Transaction extends Observable implements Comparable<Transaction>, 
   }
 
   public BigDecimal getAmount() {
-    checkState(valid, "This transaction has been deleted.");
+    checkValidity();
     BigDecimal total = BigDecimal.ZERO;
     for (LineItem li : items) {
       total = total.add(li.getAmount());
@@ -225,12 +225,16 @@ public class Transaction extends Observable implements Comparable<Transaction>, 
   }
 
   public void setAmount(BigDecimal amount) {
-    checkState(valid, "This transaction has been deleted.");
+    checkValidity();
     checkState(items.size() == 1,
         "Amount can only be set on transaction with exactly one line item.");
     items.first().setAmount(amount);
     setChanged();
     notifyObservers();
+  }
+
+  protected void checkValidity() {
+    checkState(valid, "This transaction has been deleted.");
   }
 
   @Override
