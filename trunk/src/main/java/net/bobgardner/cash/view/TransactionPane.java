@@ -17,7 +17,7 @@
 
 package net.bobgardner.cash.view;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.collect.Iterables.get;
 
 import net.bobgardner.cash.model.Account;
 import net.bobgardner.cash.model.LineItem;
@@ -122,16 +122,6 @@ class TransactionPane extends JScrollPane {
       if (getValueAt(row, col).toString().equals("...")) return false;
       // TODO: Roll-up amount should not be editable
       return columns[col].isEditable();
-    }
-
-    private static <T> T get(SortedSet<T> from, int index) {
-      checkArgument(index < from.size());
-      int i = 0;
-      for (T item : from) {
-        if (i == index) return item;
-        i++;
-      }
-      throw new IndexOutOfBoundsException();
     }
   }
 
