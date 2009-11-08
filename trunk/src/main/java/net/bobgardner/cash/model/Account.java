@@ -124,18 +124,18 @@ public final class Account extends Observable implements Comparable<Account>, Ob
   }
 
   public int getId() {
-    checkState(valid, "This account has been deleted.");
+    checkValidity();
     return id;
   }
 
   public String getName() {
-    checkState(valid, "This account has been deleted.");
+    checkValidity();
     return name;
   }
 
   public void setName(String name) {
     // TODO Interact with database
-    checkState(valid, "This account has been deleted.");
+    checkValidity();
     checkNotNull(name);
     checkArgument(!"".equals(name.trim()), "Name must not be empty.");
     this.name = name.trim();
@@ -144,13 +144,13 @@ public final class Account extends Observable implements Comparable<Account>, Ob
   }
 
   public String getInstitution() {
-    checkState(valid, "This account has been deleted.");
+    checkValidity();
     return institution;
   }
 
   public void setInstitution(String institution) {
     // TODO Interact with database
-    checkState(valid, "This account has been deleted.");
+    checkValidity();
     checkNotNull(institution);
     this.institution = institution.trim();
     setChanged();
@@ -158,13 +158,13 @@ public final class Account extends Observable implements Comparable<Account>, Ob
   }
 
   public String getNumber() {
-    checkState(valid, "This account has been deleted.");
+    checkValidity();
     return number;
   }
 
   public void setNumber(String number) {
     // TODO Interact with database
-    checkState(valid, "This account has been deleted.");
+    checkValidity();
     checkNotNull(number);
     this.number = number.trim();
     setChanged();
@@ -172,26 +172,26 @@ public final class Account extends Observable implements Comparable<Account>, Ob
   }
 
   public Type getType() {
-    checkState(valid, "This account has been deleted.");
+    checkValidity();
     return type;
   }
 
   public void setType(Type type) {
     // TODO Interact with database
-    checkState(valid, "This account has been deleted.");
+    checkValidity();
     this.type = checkNotNull(type);
     setChanged();
     notifyObservers();
   }
 
   public String getNotes() {
-    checkState(valid, "This account has been deleted.");
+    checkValidity();
     return notes;
   }
 
   public void setNotes(String notes) {
     // TODO Interact with database
-    checkState(valid, "This account has been deleted.");
+    checkValidity();
     checkNotNull(notes);
     this.notes = notes.trim();
     setChanged();
@@ -199,12 +199,12 @@ public final class Account extends Observable implements Comparable<Account>, Ob
   }
 
   public SortedSet<Transaction> getTransactions() {
-    checkState(valid, "This account has been deleted.");
+    checkValidity();
     return Collections.unmodifiableSortedSet(transactions);
   }
 
   protected void addTransaction(Transaction transaction) {
-    checkState(valid, "This account has been deleted.");
+    checkValidity();
     checkNotNull(transaction);
     checkArgument(transaction.isValid(), "Transaction is invalid.");
     transaction.addObserver(this);
@@ -215,7 +215,7 @@ public final class Account extends Observable implements Comparable<Account>, Ob
   }
 
   protected void removeTransaction(Transaction transaction) {
-    checkState(valid, "This account has been deleted.");
+    checkValidity();
     checkNotNull(transaction);
     checkArgument(!transaction.isValid(), "Transaction is still valid.");
     transaction.deleteObserver(this);
@@ -227,8 +227,12 @@ public final class Account extends Observable implements Comparable<Account>, Ob
 
   @Override
   public String toString() {
-    checkState(valid, "This account has been deleted.");
+    checkValidity();
     return getName();
+  }
+
+  protected void checkValidity() {
+    checkState(valid, "This account has been deleted.");
   }
 
   /**

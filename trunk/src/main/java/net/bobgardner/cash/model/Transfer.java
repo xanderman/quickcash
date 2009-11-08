@@ -18,7 +18,6 @@
 package net.bobgardner.cash.model;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 import org.joda.time.DateMidnight;
 
@@ -74,7 +73,7 @@ public class Transfer extends Transaction {
    * @return the {@link Account} this transfer goes to
    */
   public Account getDestAccount() {
-    checkState(isValid(), "This transaction has been deleted.");
+    checkValidity();
     return destAccount;
   }
 
@@ -84,19 +83,19 @@ public class Transfer extends Transaction {
    * @return the corresponding transfer in the destination {@link Account}
    */
   public Transfer getDestTransfer() {
-    checkState(isValid(), "This transaction has been deleted.");
+    checkValidity();
     return destTransfer;
   }
 
   @Override
   public String getDescription() {
-    checkState(isValid(), "This transaction has been deleted.");
+    checkValidity();
     return "Transfer with " + destAccount.getName();
   }
 
   @Override
   public void setDescription(String description) {
-    checkState(isValid(), "This transaction has been deleted.");
+    checkValidity();
     throw new NotImplementedException();
   }
 }

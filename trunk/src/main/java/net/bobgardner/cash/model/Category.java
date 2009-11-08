@@ -101,18 +101,18 @@ public class Category extends Observable implements Comparable<Category> {
   }
 
   public int getId() {
-    checkState(valid, "This category has been deleted.");
+    checkValidity();
     return id;
   }
 
   public String getName() {
-    checkState(valid, "This category has been deleted.");
+    checkValidity();
     return name;
   }
 
   public void setName(String name) {
     // TODO Interact with database
-    checkState(valid, "This category has been deleted.");
+    checkValidity();
     checkNotNull(name);
     checkArgument(!"".equals(name.trim()), "Name must not be empty.");
     this.name = name.trim();
@@ -121,13 +121,13 @@ public class Category extends Observable implements Comparable<Category> {
   }
 
   public String getDescription() {
-    checkState(valid, "This category has been deleted.");
+    checkValidity();
     return description;
   }
 
   public void setDescription(String description) {
     // TODO Interact with database
-    checkState(valid, "This category has been deleted.");
+    checkValidity();
     checkNotNull(description);
     this.description = description.trim();
     setChanged();
@@ -136,8 +136,12 @@ public class Category extends Observable implements Comparable<Category> {
 
   @Override
   public String toString() {
-    checkState(valid, "This category has been deleted.");
+    checkValidity();
     return this.name;
+  }
+
+  protected void checkValidity() {
+    checkState(valid, "This category has been deleted.");
   }
 
   /**
